@@ -1,0 +1,37 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+    <@layout.myLayout "rpinetrak">
+
+
+    <h1>Select Track</h1>
+
+    <div class="container">
+        <div class="lead">
+            edit tracks
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th>track</th>
+                    <th>from</th>
+                    <th>to</th>
+                    <th>points</th>
+                    <th>action</th>
+                </tr>
+                <#list gpxFiles as gpxFile>
+                    <tr>
+                        <td><a href="/tracks/${gpxFile}">2016-05-23</a></td>
+                        <td>07:11</td>
+                        <td>19:45</td>
+                        <td>11234</td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-xs">edit</button>
+                            <button type="button" class="btn btn-danger btn-xs">delete</button>
+                        </td>
+                    </tr>
+                </#list>
+            </table>
+        </div>
+    </div>
+
+</@layout.myLayout>
