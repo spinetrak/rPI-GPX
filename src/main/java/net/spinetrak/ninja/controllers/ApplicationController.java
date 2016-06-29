@@ -16,11 +16,12 @@
 package net.spinetrak.ninja.controllers;
 
 import com.google.inject.Singleton;
+import net.spinetrak.gpx.GPXFile;
+import net.spinetrak.gpx.GPXReader;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.PathParam;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Singleton
@@ -29,7 +30,7 @@ public class ApplicationController
 
   public Result index()
   {
-    final List<String> gpxFiles = getGPXFiles();
+    final List<GPXFile> gpxFiles = getGPXFiles();
     Result result = Results.html();
     result.render("gpxFiles", gpxFiles);
     result.render("editActive", "active");
@@ -40,41 +41,51 @@ public class ApplicationController
 
   public Result track(@PathParam("id") String id_)
   {
-    final String gpxFile = getGPXFile(id_);
+    final GPXFile gpxFile = getGPXFile(id_);
     return Results.html().render("gpxFile", gpxFile);
   }
 
-  private String findGPXFile(final String id_)
-  {
-    //TODO
-    return null;
-  }
-
-  private String getCurrentGPXFile()
-  {
-    return "2016-05_poland";
-  }
-
-  private String getGPXFile(final String id_)
+  private GPXFile findGPXFile(final String id_)
   {
     if (id_ == null || id_.isEmpty())
     {
-      return getCurrentGPXFile();
+      return getLatestGPXFile();
+    }
+    for (final GPXFile gpxFile : getGPXFiles())
+    {
+      if (id_.equals(gpxFile.getName()))
+      {
+        return gpxFile;
+      }
+    }
+    return null;
+  }
+
+  private GPXFile getGPXFile(final String id_)
+  {
+    if (id_ == null || id_.isEmpty())
+    {
+      return getLatestGPXFile();
     }
     if ("current".equals(id_))
     {
-      return getCurrentGPXFile();
+      return getLatestGPXFile();
     }
-    final String gpx = findGPXFile(id_);
-    if (gpx == null || gpx.isEmpty())
+    final GPXFile gpx = findGPXFile(id_);
+    if (gpx == null)
     {
-      return getCurrentGPXFile();
+      return getLatestGPXFile();
     }
     return gpx;
   }
 
-  private List<String> getGPXFiles()
+  private List<GPXFile> getGPXFiles()
   {
-    return Arrays.asList("1.gpx", "2.gpx");
+    return new GPXReader().getGPXFiles();
+  }
+
+  private GPXFile getLatestGPXFile()
+  {
+    return new GPXReader().getLatestGPXFile();
   }
 }
