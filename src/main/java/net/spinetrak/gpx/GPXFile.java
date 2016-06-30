@@ -86,7 +86,6 @@ public class GPXFile
               {
                 for (final Waypoint wp : waypoints)
                 {
-                  logger.info(wp.toString());
                   count++;
                   final Date newDate = wp.getTime();
                   final long newDateMillis = newDate != null ? newDate.getTime() : 0;

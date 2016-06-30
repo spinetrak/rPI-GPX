@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package conf;
+package net.spinetrak.ninja.conf;
 
 import net.spinetrak.ninja.controllers.ApplicationController;
 import ninja.AssetsController;

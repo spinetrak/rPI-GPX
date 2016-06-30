@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package conf;
+package net.spinetrak.ninja.conf;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;

@@ -13,15 +13,6 @@
                 <li class="${editActive}"><a class="" href="/" contenteditable="false">edit</a></li>
                 <li><a class="${currentActive}" href="/track/current" contenteditable="false">view</a></li>
                 <li><a class="${newActive}" href="/track/new" contenteditable="false">new</a></li>
-                <li class="dropdown">
-                    <a aria-expanded="false" href="#" class="dropdown-toggle" data-toggle="dropdown">tracks <b
-                            class="caret" contenteditable="false"></b></a>
-                    <ul class="dropdown-menu">
-                        <#list gpxFiles as gpxFile>
-                            <li><a class="" href="/track/${gpxFile}">${gpxFile.name}</a></li>
-                        </#list>
-                    </ul>
-                </li>
             </ul>
         </div>
     </div>
