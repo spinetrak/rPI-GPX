@@ -45,12 +45,13 @@ public class ApplicationController
     return Results.html().render("gpxFile", gpxFile);
   }
 
-  private GPXFile findGPXFile(final String id_)
+  private GPXFile getGPXFile(final String id_)
   {
-    if (id_ == null || id_.isEmpty())
+    if (id_ == null || id_.isEmpty() || "current".equals(id_))
     {
       return getLatestGPXFile();
     }
+    
     for (final GPXFile gpxFile : getGPXFiles())
     {
       if (id_.equals(gpxFile.getName()))
@@ -58,25 +59,8 @@ public class ApplicationController
         return gpxFile;
       }
     }
-    return null;
-  }
-
-  private GPXFile getGPXFile(final String id_)
-  {
-    if (id_ == null || id_.isEmpty())
-    {
-      return getLatestGPXFile();
-    }
-    if ("current".equals(id_))
-    {
-      return getLatestGPXFile();
-    }
-    final GPXFile gpx = findGPXFile(id_);
-    if (gpx == null)
-    {
-      return getLatestGPXFile();
-    }
-    return gpx;
+    
+    return getLatestGPXFile();
   }
 
   private List<GPXFile> getGPXFiles()
