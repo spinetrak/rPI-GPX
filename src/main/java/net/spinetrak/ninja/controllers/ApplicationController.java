@@ -34,7 +34,7 @@ public class ApplicationController
     Result result = Results.html();
     result.render("gpxFiles", gpxFiles);
     result.render("editActive", "active");
-    result.render("viewActive", "");
+    result.render("currentActive", "");
     result.render("newActive", "");
     return result;
   }
