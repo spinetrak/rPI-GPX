@@ -28,10 +28,21 @@ import java.util.List;
 public class ApplicationController
 {
 
+  public Result create()
+  {
+    final GPXFile gpxFile = new GPXFile();
+    final Result result = Results.html();
+    result.render("gpxFile", gpxFile);
+    result.render("editActive", "");
+    result.render("currentActive", "");
+    result.render("newActive", "active");
+    return result;
+  }
+
   public Result index()
   {
     final List<GPXFile> gpxFiles = getGPXFiles();
-    Result result = Results.html();
+    final Result result = Results.html();
     result.render("gpxFiles", gpxFiles);
     result.render("editActive", "active");
     result.render("currentActive", "");
@@ -39,7 +50,7 @@ public class ApplicationController
     return result;
   }
 
-  public Result track(@PathParam("id") String id_)
+  public Result view(final @PathParam("id") String id_)
   {
     final GPXFile gpxFile = getGPXFile(id_);
     return Results.html().render("gpxFile", gpxFile);

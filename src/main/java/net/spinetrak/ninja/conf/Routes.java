@@ -28,7 +28,8 @@ public class Routes implements ApplicationRoutes
   {
 
     router.GET().route("/").with(ApplicationController.class, "index");
-    router.GET().route("/track/{id}").with(ApplicationController.class, "track");
+    router.GET().route("/track/new").with(ApplicationController.class, "create");
+    router.GET().route("/track/{id}").with(ApplicationController.class, "view");
 
     ///////////////////////////////////////////////////////////////////////
     // Assets (pictures / javascript)

@@ -30,6 +30,11 @@ public class GPXFile
     init();
   }
 
+  public GPXFile()
+  {
+    _file = null;
+  }
+
   public String getFrom()
   {
     return new SimpleDateFormat(SDF).format(new Date(_from));

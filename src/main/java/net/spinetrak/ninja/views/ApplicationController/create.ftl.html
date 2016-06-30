@@ -1,0 +1,46 @@
+<#import "../layout/defaultLayout.ftl.html" as layout>
+    <@layout.myLayout "rpinetrak">
+
+    <div class="container">
+        <div class="lead">
+            new track
+        </div>
+
+
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th>points</th>
+                    <th>from</th>
+                    <th>to</th>
+                    <th>action</th>
+                </tr>
+                <tr>
+                    <td>nmea.txt</td>
+                    <td>11234</td>
+                    <td>2016-05-23 09:44</td>
+                    <td>2016-05-25 19:17</td>
+                    <td>
+                        <form class="form-inline">
+                            <div class="form-group form-group-sm">
+                                <label class="sr-only" for="from">from</label>
+                                <input type="text" class="form-control" id="from" placeholder="from">
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label class="sr-only" for="to">Password</label>
+                                <input type="text" class="form-control" id="to" placeholder="to">
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="deleteNmea" value="deleteNmea"> delete nmea
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-xs">make gpx</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</@layout.myLayout>
