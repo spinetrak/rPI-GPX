@@ -18,6 +18,7 @@ package net.spinetrak.ninja.controllers;
 import com.google.inject.Singleton;
 import net.spinetrak.gpx.GPXFile;
 import net.spinetrak.gpx.GPXReader;
+import net.spinetrak.gpx.NMEAFile;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.PathParam;
@@ -30,9 +31,9 @@ public class ApplicationController
 
   public Result create()
   {
-    final GPXFile gpxFile = new GPXFile();
+    final NMEAFile nmeaFile = getNMEAFile();
     final Result result = Results.html();
-    result.render("gpxFile", gpxFile);
+    result.render("nmeaFile", nmeaFile);
     result.render("editActive", "");
     result.render("currentActive", "");
     result.render("newActive", "active");
@@ -62,7 +63,7 @@ public class ApplicationController
     {
       return getLatestGPXFile();
     }
-    
+
     for (final GPXFile gpxFile : getGPXFiles())
     {
       if (id_.equals(gpxFile.getName()))
@@ -70,7 +71,7 @@ public class ApplicationController
         return gpxFile;
       }
     }
-    
+
     return getLatestGPXFile();
   }
 
@@ -82,5 +83,10 @@ public class ApplicationController
   private GPXFile getLatestGPXFile()
   {
     return new GPXReader().getLatestGPXFile();
+  }
+
+  private NMEAFile getNMEAFile()
+  {
+    return new GPXReader().getNMEAFile();
   }
 }

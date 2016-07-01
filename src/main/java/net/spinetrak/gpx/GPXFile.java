@@ -15,14 +15,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static net.spinetrak.gpx.GPXReader.SDF;
+
 public class GPXFile
 {
-  final static Logger logger = LoggerFactory.getLogger("net.spinetrak.gpx.GPXFile");
-  private static final String SDF = "yyyy-MM-dd HH:mm:ss";
-  final File _file;
-  long _from;
-  int _points;
-  long _to;
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.GPXFile");
+  private final File _file;
+  private long _from;
+  private int _points;
+  private long _to;
 
   public GPXFile(final File file_)
   {
@@ -72,7 +73,7 @@ public class GPXFile
     }
     catch (final Exception ex_)
     {
-      logger.error("", ex_);
+      LOGGER.error("", ex_);
     }
     if (gpx != null)
     {

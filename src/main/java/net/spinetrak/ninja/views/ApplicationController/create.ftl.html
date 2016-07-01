@@ -10,16 +10,17 @@
         <div class="table-responsive">
             <table class="table">
                 <tr>
+                    <th>name</th>
                     <th>points</th>
                     <th>from</th>
                     <th>to</th>
                     <th>action</th>
                 </tr>
                 <tr>
-                    <td>nmea.txt</td>
-                    <td>11234</td>
-                    <td>2016-05-23 09:44</td>
-                    <td>2016-05-25 19:17</td>
+                    <td><a href="/assets/tracks/${nmeaFile.name}">${nmeaFile.name}</a></td>
+                    <td>${nmeaFile.points}</td>
+                    <td>${nmeaFile.from}</td>
+                    <td>${nmeaFile.to}</td>
                     <td>
                         <form class="form-inline">
                             <div class="form-group form-group-sm">

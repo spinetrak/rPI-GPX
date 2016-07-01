@@ -3,7 +3,8 @@ package net.spinetrak.gpx;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -244,84 +245,6 @@ ls -al /home/pi/tracks/gpx/
     return track.toString();
   }
 
-  private String executeCommand(final String cmd_)
-  {
-    final StringBuffer output = new StringBuffer();
-
-    try
-    {
-      final Process p = Runtime.getRuntime().exec(cmd_);
-      p.waitFor();
-
-      output.append(handleProcess(p, false));
-      output.append(handleProcess(p, true));
-
-      if (p.isAlive())
-      {
-        p.destroy();
-      }
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      output.append(ex_.getMessage());
-    }
-
-    return output.toString();
-  }
-
-  private String handleProcess(final Process process_, final boolean isError_)
-  {
-    final StringBuffer sb = new StringBuffer();
-    final InputStream is = isError_ ? process_.getErrorStream() : process_.
-      getInputStream();
-    final BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-    final String inResult = handleReader(br);
-    if (!inResult.isEmpty())
-    {
-      if (isError_)
-      {
-        sb.append("ERROR: ");
-      }
-      else
-      {
-        sb.append("RESULT: ");
-      }
-      sb.append(inResult);
-    }
-    try
-    {
-      if (is != null)
-      {
-        is.close();
-      }
-      br.close();
-    }
-    catch (final IOException ex_)
-    {
-      ex_.printStackTrace();
-    }
-    return sb.toString();
-  }
-
-  private String handleReader(final BufferedReader reader_)
-  {
-    final StringBuffer output = new StringBuffer();
-    try
-    {
-      String line;
-      while ((line = reader_.readLine()) != null)
-      {
-        output.append(line).append("\n");
-      }
-      reader_.close();
-    }
-    catch (final IOException ex_)
-    {
-      ex_.printStackTrace();
-    }
-    return output.toString();
-  }
 
   private boolean validate()
   {
@@ -358,7 +281,7 @@ ls -al /home/pi/tracks/gpx/
       + " -F " + _outfile;
 
     out("Running cmd \"" + cmd + "\"");
-    out(executeCommand(cmd));
+    out(new CommandExecutioner().executeCommand(cmd));
   }
 
   private void writeHTML()
