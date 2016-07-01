@@ -46,11 +46,6 @@ public class GPXFile
     return new SimpleDateFormat(SDF).format(new Date(_from));
   }
 
-  public String getDirectory()
-  {
-    return _file.getParentFile().getAbsolutePath();
-  }
-
   public String getName()
   {
     return _file.getName();
