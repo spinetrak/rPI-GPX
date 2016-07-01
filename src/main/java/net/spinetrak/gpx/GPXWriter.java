@@ -2,6 +2,8 @@ package net.spinetrak.gpx;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.util.Date;
  */
 public class GPXWriter
 {
+  private static final String GPX_DIR = "/home/pi/tracks/gpx/";
   /*
 cp /home/pi/scripts/template.html /home/pi/scripts/$TARGET.html
 /usr/bin/perl -pi -e 's/__URL__/$TARGET.gpx/g' /home/pi/scripts/$TARGET.html
@@ -31,30 +34,36 @@ sudo /usr/bin/perl -pi -e 's/$TOKEN/$TARGET.html$TOKEN/g' /home/pi/tracks/gpx/in
 sudo mv /home/pi/scripts/$TARGET.html /home/pi/tracks/gpx/
 ls -al /home/pi/tracks/gpx/
    */
-
-  private static final String GPX_DIR = "/home/pi/tracks/gpx/";
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.GPXWriter");
   private static final String NMEA_FILE = "/home/pi/tracks/nmea.txt";
   private final boolean _backup;
   private final Integer _date;
   private final boolean _fix;
   private final long _from;
-  private final String _name;
+  private final String _gpxDir;
   private final File _nmeaFile;
   private final String _outfile;
   private final long _to;
+
+
+  public GPXWriter(final GPXParams gpxParams_)
+  {
+    this(gpxParams_.getFrom(), gpxParams_.getTo(), gpxParams_.getNmeaFile(), gpxParams_.getGpxDir(),
+         gpxParams_.isGpsFixCorrection(),
+         gpxParams_.getDateCorrection(), false);
+  }
 
   /**
    * Constructor for objects of class GPXWriter
    *
    * @param from_
    * @param to_
-   * @param name_
    * @param nmea_
    * @param fix_
    * @param date_
    * @param backup_
    */
-  public GPXWriter(final long from_, final long to_, final String name_, final String nmea_, final boolean fix_,
+  public GPXWriter(final long from_, final long to_, final String nmea_, final String gpxDir_, final boolean fix_,
                    final int date_, final boolean backup_)
   {
     if (from_ != 0 && (from_ < 2016 || from_ > 205001010000L))
@@ -68,27 +77,35 @@ ls -al /home/pi/tracks/gpx/
     _nmeaFile = new File(nmea_);
     if (!_nmeaFile.exists() || !_nmeaFile.canRead())
     {
-      throw new IllegalArgumentException("File does not exist or is not readable: " + _nmeaFile.
+      throw new IllegalArgumentException("NMEA file does not exist or is not readable: " + _nmeaFile.
         getAbsolutePath());
     }
+
+    final File gpxDir = new File(gpxDir_);
+    if (!gpxDir.exists() || !gpxDir.canRead() || !gpxDir.isDirectory())
+    {
+      throw new IllegalArgumentException(
+        "GPX directory does not exist or is not readable: " + gpxDir.getAbsolutePath());
+    }
+    _gpxDir = gpxDir.getAbsolutePath();
+
     if (date_ != 0 && (date_ < 20160101 || date_ > 20500101))
     {
       throw new IllegalArgumentException("Date is out of range: " + date_);
     }
     _from = from_;
     _to = to_;
-    _name = name_;
     _fix = fix_;
     _date = date_;
     _outfile = buildOutFile();
     _backup = backup_;
-    out("Using  from: " + _from + ";  to: " + _to + "; name: " + _name + "; nmea: " + _nmeaFile.
+    out("Using  from: " + _from + ";  to: " + _to + "; nmea: " + _nmeaFile.
       getAbsolutePath() + "; fix: " + _fix + "; date: " + _date + "; outfile: " + _outfile);
   }
 
   public static void error(final String error_)
   {
-    System.err.println(error_);
+    LOGGER.error(error_);
     System.exit(1);
   }
 
@@ -104,12 +121,12 @@ ls -al /home/pi/tracks/gpx/
           .describedAs("from").defaultsTo(0L);
         accepts("t", "to").withRequiredArg().ofType(Long.class)
           .describedAs("to").defaultsTo(0L);
-        accepts("n", "name").withRequiredArg().ofType(String.class).
-          describedAs("name").
-          defaultsTo("new");
         accepts("i", "input").withRequiredArg().ofType(String.class).
           describedAs("input").
           defaultsTo(NMEA_FILE);
+        accepts("o", "output").withRequiredArg().ofType(String.class).
+          describedAs("input").
+          defaultsTo(GPX_DIR);
         accepts("g", "gpsfix_correction");
         accepts("b", "backup nmea");
         accepts("h", "help");
@@ -154,21 +171,43 @@ ls -al /home/pi/tracks/gpx/
 
   public static void out(String msg_)
   {
-    System.out.println(msg_);
+    LOGGER.info(msg_);
   }
 
   private static GPXWriter getInstance(final OptionSet options) throws IOException
   {
     final long from = (Long) options.valueOf("f");
     final long to = (Long) options.valueOf("t");
-    final String name = (String) options.valueOf("n");
     final String input = (String) options.valueOf("i");
+    final String output = (String) options.valueOf("o");
     final boolean fix = options.has("g");
     final boolean backup = options.has("b");
     final int date = (Integer) options.valueOf("d");
 
-    final GPXWriter gpx = new GPXWriter(from, to, name, input, fix, date, backup);
+    final GPXWriter gpx = new GPXWriter(from, to, input, output, fix, date, backup);
     return gpx;
+  }
+
+  public void write()
+  {
+    /**
+     * /usr/bin/sudo /usr/bin/gpsbabel -D3 -i
+     * nmea[,ignore_fix=1[,date=20160612]] -f /home/pi/tracks/nmea.txt -x
+     * position,distance=10m [-x track,start=2016,stop=20500101,fix=3d] -o gpx
+     * -F /home/pi/tracks/gpx/2016-20500101_new.gpx
+     *
+     */
+    final String cmd
+      = "/usr/bin/sudo /usr/bin/gpsbabel -D 3 "
+      + buildNmeaOptions()
+      + " -f " + _nmeaFile.getAbsolutePath() + " "
+      + buildTrackOptions()
+      + " -x position,distance=10m"
+      + " -o gpx"
+      + " -F " + _outfile;
+
+    out("Running cmd \"" + cmd + "\"");
+    out(new CommandExecutioner().executeCommand(cmd));
   }
 
   private void backupNmea()
@@ -214,11 +253,11 @@ ls -al /home/pi/tracks/gpx/
 
   private String buildOutFile()
   {
-    // -F /home/pi/tracks/gpx/2016-20500101_new.gpx
-    final StringBuffer name = new StringBuffer(GPX_DIR);
+    // -F /home/pi/tracks/gpx/2016-20500101.gpx
+    final StringBuffer name = new StringBuffer(_gpxDir).append("/");
     final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd_HH-mm-ss");
     final String date = sdf.format(new Date());
-    name.append(date).append("_").append(_name).append(".gpx");
+    name.append(date).append(".gpx");
     return name.toString();
   }
 
@@ -245,7 +284,6 @@ ls -al /home/pi/tracks/gpx/
     return track.toString();
   }
 
-
   private boolean validate()
   {
     final File gpx = new File(_outfile);
@@ -260,28 +298,6 @@ ls -al /home/pi/tracks/gpx/
     out("Deleting " + _outfile + " (" + gpx.length() + " bytes)");
     gpx.delete();
     return false;
-  }
-
-  private void write()
-  {
-    /**
-     * /usr/bin/sudo /usr/bin/gpsbabel -D3 -i
-     * nmea[,ignore_fix=1[,date=20160612]] -f /home/pi/tracks/nmea.txt -x
-     * position,distance=10m [-x track,start=2016,stop=20500101,fix=3d] -o gpx
-     * -F /home/pi/tracks/gpx/2016-20500101_new.gpx
-     *
-     */
-    final String cmd
-      = "/usr/bin/sudo /usr/bin/gpsbabel -D 3 "
-      + buildNmeaOptions()
-      + " -f " + NMEA_FILE + " "
-      + buildTrackOptions()
-      + " -x position,distance=10m"
-      + " -o gpx"
-      + " -F " + _outfile;
-
-    out("Running cmd \"" + cmd + "\"");
-    out(new CommandExecutioner().executeCommand(cmd));
   }
 
   private void writeHTML()

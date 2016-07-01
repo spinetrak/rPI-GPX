@@ -1,10 +1,10 @@
 package net.spinetrak.gpx;
 
-import com.hs.gpxparser.GPXParser;
-import com.hs.gpxparser.modal.GPX;
-import com.hs.gpxparser.modal.Track;
-import com.hs.gpxparser.modal.TrackSegment;
-import com.hs.gpxparser.modal.Waypoint;
+import net.spinetrak.gpx.gpxparser.GPXParser;
+import net.spinetrak.gpx.gpxparser.modal.GPX;
+import net.spinetrak.gpx.gpxparser.modal.Track;
+import net.spinetrak.gpx.gpxparser.modal.TrackSegment;
+import net.spinetrak.gpx.gpxparser.modal.Waypoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +36,19 @@ public class GPXFile
     _file = null;
   }
 
+  public String getDirectory()
+  {
+    return _file.getParentFile().getAbsolutePath();
+  }
+
   public String getFrom()
   {
     return new SimpleDateFormat(SDF).format(new Date(_from));
+  }
+
+  public String getDirectory()
+  {
+    return _file.getParentFile().getAbsolutePath();
   }
 
   public String getName()

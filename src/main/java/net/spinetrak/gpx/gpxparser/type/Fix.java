@@ -1,5 +1,5 @@
 
-package com.hs.gpxparser.type;
+package net.spinetrak.gpx.gpxparser.type;
 
 /**
  * <p>Type of GPS fix. Value comes from list: {'none'|'2d'|'3d'|'dgps'|'pps'}</p>

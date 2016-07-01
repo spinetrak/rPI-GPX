@@ -1,4 +1,4 @@
-package com.hs.gpxparser.modal;
+package net.spinetrak.gpx.gpxparser.modal;
 
 /**
  * Created by Himanshu on 7/5/2015.

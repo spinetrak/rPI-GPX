@@ -1,4 +1,4 @@
-package com.hs.gpxparser.modal;
+package net.spinetrak.gpx.gpxparser.modal;
 
 import java.util.HashSet;
 

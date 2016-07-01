@@ -1,6 +1,6 @@
-package com.hs.gpxparser;
+package net.spinetrak.gpx.gpxparser;
 
-import com.hs.gpxparser.extension.IExtensionParser;
+import net.spinetrak.gpx.gpxparser.extension.IExtensionParser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

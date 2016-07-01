@@ -1,8 +1,8 @@
-package com.hs.gpxparser;
+package net.spinetrak.gpx.gpxparser;
 
-import com.hs.gpxparser.extension.IExtensionParser;
-import com.hs.gpxparser.modal.*;
-import com.hs.gpxparser.type.Fix;
+import net.spinetrak.gpx.gpxparser.extension.IExtensionParser;
+import net.spinetrak.gpx.gpxparser.modal.*;
+import net.spinetrak.gpx.gpxparser.type.Fix;
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;

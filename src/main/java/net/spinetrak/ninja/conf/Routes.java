@@ -29,6 +29,7 @@ public class Routes implements ApplicationRoutes
 
     router.GET().route("/").with(ApplicationController.class, "index");
     router.GET().route("/track/new").with(ApplicationController.class, "create");
+    router.POST().route("/track/new").with(ApplicationController.class, "postGPXParams");
     router.GET().route("/track/{id}").with(ApplicationController.class, "view");
 
     ///////////////////////////////////////////////////////////////////////
@@ -42,6 +43,7 @@ public class Routes implements ApplicationRoutes
     ///////////////////////////////////////////////////////////////////////
     // Index / Catchall shows index page
     ///////////////////////////////////////////////////////////////////////
+    router.GET().route("/favicon.ico").with(AssetsController.class, "serveStatic");
     router.GET().route("/.*").with(ApplicationController.class, "index");
   }
 

@@ -1,6 +1,6 @@
-package com.hs.gpxparser.modal;
+package net.spinetrak.gpx.gpxparser.modal;
 
-import com.hs.gpxparser.type.Fix;
+import net.spinetrak.gpx.gpxparser.type.Fix;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

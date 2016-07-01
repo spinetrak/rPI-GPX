@@ -1,4 +1,4 @@
-package com.hs.gpxparser;
+package net.spinetrak.gpx.gpxparser;
 
 public interface GPXConstants
 {

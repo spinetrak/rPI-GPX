@@ -32,6 +32,11 @@ public class NMEAFile
     return new SimpleDateFormat(SDF).format(new Date(_from));
   }
 
+  public String getFullFileName()
+  {
+    return _file.getAbsolutePath();
+  }
+
   public String getName()
   {
     return _file.getName();
@@ -69,7 +74,6 @@ public class NMEAFile
       while (it.hasNext())
       {
         final String line = it.nextLine();
-        LOGGER.info(String.format("line: [%s]", line));
         if (line.contains("GGA"))
         {
           count++;
@@ -77,7 +81,6 @@ public class NMEAFile
           {
             _from = parseDate(from, parseTime(line));
           }
-          LOGGER.info(String.format("parse to: [%s]", line));
           toStr = parseTime(line);
         }
       }
@@ -91,7 +94,6 @@ public class NMEAFile
     {
       LineIterator.closeQuietly(it);
       _points = count;
-      LOGGER.info(String.format("to: [%s] [%s]", to, _to));
       _to = parseDate(to, toStr);
     }
   }
@@ -100,7 +102,6 @@ public class NMEAFile
   {
     final DateTime dateTime = new DateTime(date_).withTimeAtStartOfDay();
     final DateTime time = DTF.parseDateTime(time_);
-    LOGGER.info(String.format("time: [%s]", time));
     return dateTime.withTime(time.getHourOfDay(), time.getMinuteOfHour(), time.getSecondOfMinute(),
                              time.getMillisOfSecond()).toDate().getTime();
   }

@@ -16,9 +16,8 @@
 package net.spinetrak.ninja.controllers;
 
 import com.google.inject.Singleton;
-import net.spinetrak.gpx.GPXFile;
-import net.spinetrak.gpx.GPXReader;
-import net.spinetrak.gpx.NMEAFile;
+import net.spinetrak.gpx.*;
+import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.PathParam;
@@ -49,6 +48,16 @@ public class ApplicationController
     result.render("currentActive", "");
     result.render("newActive", "");
     return result;
+  }
+
+  public Result postGPXParams(final Context context_, final GPXParams params_)
+  {
+
+    params_.setNmeaFile(getNMEAFile().getFullFileName());
+    params_.setGpxDir(getLatestGPXFile().getDirectory());
+    final GPXWriter gpxWriter = new GPXWriter(params_);
+    gpxWriter.write();
+    return Results.redirect("/");
   }
 
   public Result view(final @PathParam("id") String id_)
