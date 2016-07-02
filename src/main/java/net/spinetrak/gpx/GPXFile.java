@@ -4,10 +4,7 @@ import com.javadocmd.simplelatlng.LatLng;
 import com.javadocmd.simplelatlng.util.LengthUnit;
 import com.javadocmd.simplelatlng.window.RectangularWindow;
 import net.spinetrak.gpx.gpxparser.GPXParser;
-import net.spinetrak.gpx.gpxparser.modal.GPX;
-import net.spinetrak.gpx.gpxparser.modal.Track;
-import net.spinetrak.gpx.gpxparser.modal.TrackSegment;
-import net.spinetrak.gpx.gpxparser.modal.Waypoint;
+import net.spinetrak.gpx.gpxparser.modal.*;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -99,12 +96,18 @@ public class GPXFile extends GPSFile
     return _zoom;
   }
 
+  private RectangularWindow getWindow(final Bounds bounds_)
+  {
+    return new RectangularWindow(new LatLng(bounds_.getMaxLat(), bounds_.getMaxLon()),
+                                 new LatLng(bounds_.getMinLat(), bounds_.getMinLon()));
+  }
+
   private void init()
   {
     int count = 0;
     long from = 0;
     long to = 0;
-    RectangularWindow window = new RectangularWindow(new LatLng(0, 0), new LatLng(0, 0));
+    RectangularWindow window = null;
     double lon = 0;
     GPX gpx = null;
     try
@@ -117,6 +120,8 @@ public class GPXFile extends GPSFile
     }
     if (gpx != null)
     {
+      setCenter(gpx);
+
       final Set<Track> tracks = gpx.getTracks();
       if (tracks != null)
       {
@@ -134,13 +139,6 @@ public class GPXFile extends GPSFile
                 {
                   count++;
                   final Date newDate = wp.getTime();
-                  final LatLng point = new LatLng(wp.getLatitude(), wp.getLongitude());
-                    window = setEast(point, window);
-                    window = setSouth(point, window);
-                    window = setWest(point, window);
-                    window = setNorth(point, window);
-
-
                   final long newDateMillis = newDate != null ? newDate.getTime() : 0;
                   if (newDateMillis == 0)
                   {
@@ -172,60 +170,22 @@ public class GPXFile extends GPSFile
     _points = count;
     _from = from;
     _to = to;
-    _center = window.getCenter();
-    setZoom(window);
   }
 
-  private RectangularWindow setEast(final LatLng point_, RectangularWindow window_)
+  private void setCenter(final GPX gpx_)
   {
-    final double windowEast = window_.getRightLongitude();
-    final double pointEast = point_.getLongitude();
-
-    if (windowEast < pointEast)
+    try
     {
-      return new RectangularWindow(new LatLng(window_.getMaxLatitude(), pointEast),
-                                   new LatLng(window_.getMinLatitude(), window_.getLeftLongitude()));
+      final Bounds bounds = gpx_.getMetadata().getBounds();
+      final RectangularWindow window = getWindow(bounds);
+      setZoom(window);
+      _center = window.getCenter();
     }
-    return window_;
-  }
-
-  private RectangularWindow setNorth(final LatLng point_, RectangularWindow window_)
-  {
-    final double windowNorth = window_.getMaxLatitude();
-    final double pointNorth = point_.getLatitude();
-
-    if (windowNorth < pointNorth)
+    catch (final Exception ex_)
     {
-      return new RectangularWindow((new LatLng(pointNorth, window_.getRightLongitude())),
-                                   new LatLng(window_.getMinLatitude(), window_.getLeftLongitude()));
+      LOGGER.error(getName(), ex_);
+      _center = new RectangularWindow(new LatLng(54, 10), new LatLng(53, 9)).getCenter();
     }
-    return window_;
-  }
-
-  private RectangularWindow setSouth(final LatLng point_, RectangularWindow window_)
-  {
-    final double windowSouth = window_.getMinLatitude();
-    final double pointSouth = point_.getLatitude();
-
-    if (windowSouth > pointSouth)
-    {
-      return new RectangularWindow((new LatLng(window_.getMaxLatitude(), window_.getRightLongitude())),
-                                   new LatLng(pointSouth, window_.getLeftLongitude()));
-    }
-    return window_;
-  }
-
-  private RectangularWindow setWest(final LatLng point_, RectangularWindow window_)
-  {
-    final double windowWest = window_.getLeftLongitude();
-    final double pointWest = point_.getLongitude();
-
-    if (windowWest > pointWest)
-    {
-      return new RectangularWindow((new LatLng(window_.getMaxLatitude(), window_.getRightLongitude())),
-                                   new LatLng(window_.getMinLatitude(), pointWest));
-    }
-    return window_;
   }
 
   private void setZoom(final RectangularWindow window_)
@@ -264,5 +224,4 @@ public class GPXFile extends GPSFile
       _zoom = 7;
     }
   }
-
 }

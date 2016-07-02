@@ -205,7 +205,7 @@ ls -al /home/pi/tracks/gpx/
       + " -f " + _nmeaFile.getFile().getAbsolutePath() + " "
       + buildTrackOptions()
       + " -x simplify,count=" + _nmeaFile.getPoints() / 3
-      + " -o gpx"
+      + " -o gpx,gpxver=1.1"
       + " -F " + _outfile;
 
     out("Running under OS [" + OS + "]");
