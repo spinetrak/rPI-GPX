@@ -64,7 +64,12 @@ public class ApplicationController
   public Result view(final @PathParam("id") String id_)
   {
     final GPXFile gpxFile = getGPXFile(id_);
-    return Results.html().render("gpxFile", gpxFile);
+    final Result result = Results.html();
+    result.render("gpxFile", gpxFile);
+    result.render("editActive", "");
+    result.render("currentActive", "active");
+    result.render("newActive", "");
+    return result;
   }
 
   private GPXFile getGPXFile(final String id_)

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link href="/assets/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/webjars/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
     <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
     <script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js"></script>
 
@@ -68,6 +71,27 @@
 </head>
 <!-- body.onload is called once the page is loaded (call the 'init' function) -->
 <body onload="init();">
+
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" contenteditable="false">rpinetrak</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="${editActive}"><a class="" href="/" contenteditable="false">edit</a></li>
+                <li><a class="${currentActive}" href="/track/current" contenteditable="false">current</a></li>
+                <li><a class="${newActive}" href="/track/new" contenteditable="false">new</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 <!-- define a DIV into which the map will appear. Make it take up the whole window -->
 <div style="width:100%; height:100%" id="map"></div>
 </body>
