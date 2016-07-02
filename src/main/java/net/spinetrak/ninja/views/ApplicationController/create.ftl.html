@@ -25,21 +25,16 @@
                         <form class="form-inline" action="/track/new" method="post">
                             <div class="form-group form-group-sm">
                                 <label class="sr-only" for="from">from</label>
-                                <input type="number" class="form-control" id="from" placeholder="from">
+                                <input type="number" class="form-control" id="from" name="from" placeholder="from">
                             </div>
                             <div class="form-group form-group-sm">
                                 <label class="sr-only" for="to">to</label>
-                                <input type="number" class="form-control" id="to" placeholder="to">
+                                <input type="number" class="form-control" id="to" name="to" placeholder="to">
                             </div>
                             <div class="form-group form-group-sm">
                                 <label class="sr-only" for="dateCorrection">dateCorrection</label>
-                                <input type="number" class="form-control" id="dateCorrection" placeholder="YYYYMMDD">
-                            </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" id="gpsFixCorrection" value="gpsFixCorrection"> correct GPS
-                                    fix
-                                </label>
+                                <input type="number" class="form-control" id="dateCorrection" name="dateCorrection"
+                                       placeholder="YYYYMMDD">
                             </div>
                             <button type="submit" class="btn btn-warning btn-xs">make gpx</button>
                         </form>

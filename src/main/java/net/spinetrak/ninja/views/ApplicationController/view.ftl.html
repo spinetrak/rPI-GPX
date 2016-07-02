@@ -60,9 +60,9 @@
 
             // Start position for the map (hardcoded here for simplicity,
             // but maybe you want to get this from the URL params)
-            var lat = 53.552664456;
-            var lon = 9.967329464;
-            var zoom = 13;
+            var lat = ${gpxFile.center.latitude};
+            var lon = ${gpxFile.center.longitude};
+            var zoom = ${gpxFile.zoom};
             var lonLat = new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
             map.setCenter(lonLat, zoom);
         }

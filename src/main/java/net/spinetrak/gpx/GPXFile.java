@@ -1,5 +1,8 @@
 package net.spinetrak.gpx;
 
+import com.javadocmd.simplelatlng.LatLng;
+import com.javadocmd.simplelatlng.util.LengthUnit;
+import com.javadocmd.simplelatlng.window.RectangularWindow;
 import net.spinetrak.gpx.gpxparser.GPXParser;
 import net.spinetrak.gpx.gpxparser.modal.GPX;
 import net.spinetrak.gpx.gpxparser.modal.Track;
@@ -27,9 +30,11 @@ public class GPXFile extends GPSFile
   protected static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HHmmss.SSS");
   protected static final String SDF = "yyyy-MM-dd HH:mm:ss";
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.GPXFile");
+  private LatLng _center;
   private long _from;
   private int _points;
   private long _to;
+  private int _zoom;
 
   public GPXFile(final File file_)
   {
@@ -69,6 +74,11 @@ public class GPXFile extends GPSFile
     return gpxFile;
   }
 
+  public LatLng getCenter()
+  {
+    return _center;
+  }
+
   public String getFrom()
   {
     return new SimpleDateFormat(SDF).format(new Date(_from));
@@ -84,11 +94,20 @@ public class GPXFile extends GPSFile
     return new SimpleDateFormat(SDF).format(new Date(_to));
   }
 
+  public int getZoom()
+  {
+    return _zoom;
+  }
+
   private void init()
   {
     int count = 0;
     long from = 0;
     long to = 0;
+    LatLng northEast;
+    LatLng southWest;
+    RectangularWindow window = null;
+    double lon = 0;
     GPX gpx = null;
     try
     {
@@ -117,6 +136,19 @@ public class GPXFile extends GPSFile
                 {
                   count++;
                   final Date newDate = wp.getTime();
+                  final LatLng point = new LatLng(wp.getLatitude(), wp.getLongitude());
+                  if (window == null)
+                  {
+                    window = new RectangularWindow(point, point);
+                  }
+                  else
+                  {
+                    window = setEast(point, window);
+                    window = setSouth(point, window);
+                    window = setWest(point, window);
+                    window = setNorth(point, window);
+                  }
+
                   final long newDateMillis = newDate != null ? newDate.getTime() : 0;
                   if (newDateMillis == 0)
                   {
@@ -148,5 +180,101 @@ public class GPXFile extends GPSFile
     _points = count;
     _from = from;
     _to = to;
+    _center = window.getCenter();
+    setZoom(window);
   }
+
+  private RectangularWindow setEast(final LatLng point_, RectangularWindow window_)
+  {
+    final double windowEast = window_.getRightLongitude();
+    final double pointEast = point_.getLongitude();
+
+    if (windowEast < pointEast)
+    {
+      LOGGER.info("setting east: from " + windowEast + " to " + pointEast);
+      return new RectangularWindow(new LatLng(window_.getMaxLatitude(), pointEast),
+                                   new LatLng(window_.getMinLatitude(), window_.getLeftLongitude()));
+    }
+    return window_;
+  }
+
+  private RectangularWindow setNorth(final LatLng point_, RectangularWindow window_)
+  {
+    final double windowNorth = window_.getMaxLatitude();
+    final double pointNorth = point_.getLatitude();
+
+    if (windowNorth < pointNorth)
+    {
+      LOGGER.info("setting north: from " + windowNorth + " to " + pointNorth);
+      return new RectangularWindow((new LatLng(pointNorth, window_.getRightLongitude())),
+                                   new LatLng(window_.getMinLatitude(), window_.getLeftLongitude()));
+    }
+    return window_;
+  }
+
+  private RectangularWindow setSouth(final LatLng point_, RectangularWindow window_)
+  {
+    final double windowSouth = window_.getMinLatitude();
+    final double pointSouth = point_.getLatitude();
+
+    if (windowSouth > pointSouth)
+    {
+      LOGGER.info("setting south: from " + windowSouth + " to " + pointSouth);
+      return new RectangularWindow((new LatLng(window_.getMaxLatitude(), window_.getRightLongitude())),
+                                   new LatLng(pointSouth, window_.getLeftLongitude()));
+    }
+    return window_;
+  }
+
+  private RectangularWindow setWest(final LatLng point_, RectangularWindow window_)
+  {
+    final double windowWest = window_.getLeftLongitude();
+    final double pointWest = point_.getLongitude();
+
+    if (windowWest > pointWest)
+    {
+      LOGGER.info("setting west: from " + windowWest + " to " + pointWest);
+      return new RectangularWindow((new LatLng(window_.getMaxLatitude(), window_.getRightLongitude())),
+                                   new LatLng(window_.getMinLatitude(), pointWest));
+    }
+    return window_;
+  }
+
+  private void setZoom(final RectangularWindow window_)
+  {
+    final double height = window_.getHeight(LengthUnit.KILOMETER);
+    if (height < 1)
+    {
+      _zoom = 14;
+    }
+    else if (height >= 1 && height < 10)
+    {
+      _zoom = 13;
+    }
+    else if (height >= 10 && height < 100)
+    {
+      _zoom = 12;
+    }
+    else if (height >= 100 && height < 150)
+    {
+      _zoom = 11;
+    }
+    else if (height >= 150 && height < 200)
+    {
+      _zoom = 10;
+    }
+    else if (height >= 200 && height < 400)
+    {
+      _zoom = 9;
+    }
+    else if (height >= 400 && height < 1000)
+    {
+      _zoom = 8;
+    }
+    else
+    {
+      _zoom = 7;
+    }
+  }
+
 }

@@ -40,7 +40,6 @@ ls -al /home/pi/tracks/gpx/
     "mac") >= 0) ? "/Applications/GPSBabelFE.app/Contents/MacOS/gpsbabel" : "/usr/bin/sudo /usr/bin/gpsbabel";
   private final boolean _backup;
   private final Integer _date;
-  private final boolean _fix;
   private final long _from;
   private final String _gpxDir;
   private final NMEAFile _nmeaFile;
@@ -51,8 +50,8 @@ ls -al /home/pi/tracks/gpx/
   public GPXWriter(final GPXParams gpxParams_)
   {
     this(gpxParams_.getFrom(), gpxParams_.getTo(),
-         gpxParams_.isGpsFixCorrection(),
          gpxParams_.getDateCorrection(), false);
+    LOGGER.info(gpxParams_.toString());
   }
 
   /**
@@ -60,11 +59,10 @@ ls -al /home/pi/tracks/gpx/
    *
    * @param from_
    * @param to_
-   * @param fix_
    * @param date_
    * @param backup_
    */
-  public GPXWriter(final long from_, final long to_, final boolean fix_,
+  public GPXWriter(final long from_, final long to_,
                    final int date_, final boolean backup_)
   {
     if (from_ != 0 && (from_ < 2016 || from_ > 205001010000L))
@@ -96,7 +94,6 @@ ls -al /home/pi/tracks/gpx/
     }
     _from = from_;
     _to = to_;
-    _fix = fix_;
     _date = date_;
     _outfile = buildOutFile();
     _backup = backup_;
@@ -172,11 +169,10 @@ ls -al /home/pi/tracks/gpx/
   {
     final long from = (Long) options.valueOf("f");
     final long to = (Long) options.valueOf("t");
-    final boolean fix = options.has("g");
     final boolean backup = options.has("b");
     final int date = (Integer) options.valueOf("d");
 
-    final GPXWriter gpx = new GPXWriter(from, to, fix, date, backup);
+    final GPXWriter gpx = new GPXWriter(from, to, date, backup);
     return gpx;
   }
 
@@ -186,7 +182,6 @@ ls -al /home/pi/tracks/gpx/
     return "GPXWriter{" +
       "_backup=" + _backup +
       ", _date=" + _date +
-      ", _fix=" + _fix +
       ", _from=" + _from +
       ", _gpxDir='" + _gpxDir + '\'' +
       ", _nmeaFile=" + _nmeaFile +
@@ -248,10 +243,6 @@ ls -al /home/pi/tracks/gpx/
   {
     //-i nmea[,ignore_fix=1[,date=20160612]]
     final StringBuffer nmea = new StringBuffer("-i nmea");
-    if (_fix)
-    {
-      nmea.append(",ignore_fix=1");
-    }
     if (_date != 0)
     {
       nmea.append(",date=").append(_date);
@@ -273,7 +264,7 @@ ls -al /home/pi/tracks/gpx/
   {
     //[-x track,start=2016,stop=20500101,fix=3d]
     final StringBuffer track = new StringBuffer("");
-    if (_from > 0 || _to > 0 || _fix)
+    if (_from > 0 || _to > 0)
     {
       track.append("-x track");
       if (_from != 0)
@@ -283,10 +274,6 @@ ls -al /home/pi/tracks/gpx/
       if (_to != 0)
       {
         track.append(",stop=").append(_to);
-      }
-      if (_fix)
-      {
-        track.append(",fix=3d");
       }
     }
     return track.toString();

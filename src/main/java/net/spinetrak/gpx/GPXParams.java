@@ -2,50 +2,48 @@ package net.spinetrak.gpx;
 
 public class GPXParams
 {
-  private int _dateCorrection;
-  private long _from;
-  private boolean _gpsFixCorrection;
-  private long _to;
+  private int dateCorrection;
+  private long from;
+  private long to;
 
   public int getDateCorrection()
   {
-    return _dateCorrection;
+    return dateCorrection;
   }
 
   public long getFrom()
   {
-    return _from;
+    return from;
   }
 
   public long getTo()
   {
-    return _to;
-  }
-
-  public boolean isGpsFixCorrection()
-  {
-    return _gpsFixCorrection;
+    return to;
   }
 
   public void setDateCorrection(final int dateCorrection_)
   {
-    _dateCorrection = dateCorrection_;
+    dateCorrection = dateCorrection_;
   }
 
   public void setFrom(final long from_)
   {
-    _from = from_;
-  }
-
-  public void setGpsFixCorrection(final boolean gpsFixCorrection_)
-  {
-    _gpsFixCorrection = gpsFixCorrection_;
+    from = from_;
   }
 
   public void setTo(final long to_)
   {
-    _to = to_;
+    to = to_;
   }
 
 
+  @Override
+  public String toString()
+  {
+    return "GPXParams{" +
+      "dateCorrection=" + dateCorrection +
+      ", from=" + from +
+      ", to=" + to +
+      '}';
+  }
 }

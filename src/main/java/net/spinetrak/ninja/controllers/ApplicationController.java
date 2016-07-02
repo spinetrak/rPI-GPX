@@ -24,6 +24,7 @@ import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.PathParam;
+import ninja.validation.JSR303Validation;
 
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class ApplicationController
     return result;
   }
 
-  public Result postGPXParams(final Context context_, final GPXParams params_)
+  public Result postGPXParams(final Context context_, @JSR303Validation final GPXParams params_)
   {
     final GPXWriter gpxWriter = new GPXWriter(params_);
     gpxWriter.write();
