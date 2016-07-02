@@ -5,40 +5,68 @@ import net.spinetrak.gpx.gpxparser.modal.GPX;
 import net.spinetrak.gpx.gpxparser.modal.Track;
 import net.spinetrak.gpx.gpxparser.modal.TrackSegment;
 import net.spinetrak.gpx.gpxparser.modal.Waypoint;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static net.spinetrak.gpx.GPXReader.SDF;
-
-public class GPXFile
+public class GPXFile extends GPSFile
 {
+  protected static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HHmmss.SSS");
+  protected static final String SDF = "yyyy-MM-dd HH:mm:ss";
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.GPXFile");
-  private final File _file;
   private long _from;
   private int _points;
   private long _to;
 
   public GPXFile(final File file_)
   {
-    _file = file_;
+    super(file_);
     init();
   }
 
-  public GPXFile()
+  public static List<GPXFile> getGPXFiles()
   {
-    _file = null;
+    final List<GPXFile> gpxFiles = new ArrayList<>();
+    try (final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(GPSFile.GPX_DIR, "*.{gpx}"))
+    {
+      for (final Path path : directoryStream)
+      {
+        gpxFiles.add(new GPXFile(path.toFile()));
+      }
+    }
+    catch (final IOException ex_)
+    {
+      LOGGER.error("", ex_);
+    }
+    return gpxFiles;
   }
 
-  public String getDirectory()
+  public static GPXFile getLatestGPXFile()
   {
-    return _file.getParentFile().getAbsolutePath();
+    long timestamp = 0;
+    GPXFile gpxFile = null;
+    for (final GPXFile file : getGPXFiles())
+    {
+      final long newTimestamp = file.getTimestamp();
+      if (newTimestamp > timestamp)
+      {
+        gpxFile = file;
+      }
+    }
+    return gpxFile;
   }
 
   public String getFrom()
@@ -46,19 +74,9 @@ public class GPXFile
     return new SimpleDateFormat(SDF).format(new Date(_from));
   }
 
-  public String getName()
-  {
-    return _file.getName();
-  }
-
   public int getPoints()
   {
     return _points;
-  }
-
-  public long getTimestamp()
-  {
-    return _file.lastModified();
   }
 
   public String getTo()
@@ -74,7 +92,7 @@ public class GPXFile
     GPX gpx = null;
     try
     {
-      gpx = new GPXParser().parseGPX(new FileInputStream(_file));
+      gpx = new GPXParser().parseGPX(new FileInputStream(getFile()));
     }
     catch (final Exception ex_)
     {

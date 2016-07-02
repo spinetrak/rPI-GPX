@@ -52,7 +52,7 @@ public interface GPXConstants
   String NODE_NAME = "name";
   // String NODE_EXTENSIONS = "extensions";
   /* end Waypoint nodes and attributes */
-	/* Route nodes */
+  /* Route nodes */
   // String NODE_NAME = "name";
   // String NODE_CMT = "cmt";
   // String NODE_DESC = "desc";

@@ -48,7 +48,7 @@ ls -al /home/pi/tracks/gpx/
 
   public GPXWriter(final GPXParams gpxParams_)
   {
-    this(gpxParams_.getFrom(), gpxParams_.getTo(), gpxParams_.getNmeaFile(), gpxParams_.getGpxDir(),
+    this(gpxParams_.getFrom(), gpxParams_.getTo(),
          gpxParams_.isGpsFixCorrection(),
          gpxParams_.getDateCorrection(), false);
   }
@@ -58,12 +58,11 @@ ls -al /home/pi/tracks/gpx/
    *
    * @param from_
    * @param to_
-   * @param nmea_
    * @param fix_
    * @param date_
    * @param backup_
    */
-  public GPXWriter(final long from_, final long to_, final String nmea_, final String gpxDir_, final boolean fix_,
+  public GPXWriter(final long from_, final long to_, final boolean fix_,
                    final int date_, final boolean backup_)
   {
     if (from_ != 0 && (from_ < 2016 || from_ > 205001010000L))
@@ -74,14 +73,14 @@ ls -al /home/pi/tracks/gpx/
     {
       throw new IllegalArgumentException("To is out of range: " + to_);
     }
-    _nmeaFile = new File(nmea_);
+    _nmeaFile = GPSFile.NMEA_FILE.toFile();
     if (!_nmeaFile.exists() || !_nmeaFile.canRead())
     {
       throw new IllegalArgumentException("NMEA file does not exist or is not readable: " + _nmeaFile.
         getAbsolutePath());
     }
 
-    final File gpxDir = new File(gpxDir_);
+    final File gpxDir = GPSFile.GPX_DIR.toFile();
     if (!gpxDir.exists() || !gpxDir.canRead() || !gpxDir.isDirectory())
     {
       throw new IllegalArgumentException(
@@ -179,12 +178,11 @@ ls -al /home/pi/tracks/gpx/
     final long from = (Long) options.valueOf("f");
     final long to = (Long) options.valueOf("t");
     final String input = (String) options.valueOf("i");
-    final String output = (String) options.valueOf("o");
     final boolean fix = options.has("g");
     final boolean backup = options.has("b");
     final int date = (Integer) options.valueOf("d");
 
-    final GPXWriter gpx = new GPXWriter(from, to, input, output, fix, date, backup);
+    final GPXWriter gpx = new GPXWriter(from, to, fix, date, backup);
     return gpx;
   }
 

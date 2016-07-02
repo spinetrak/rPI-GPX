@@ -16,7 +16,10 @@
 package net.spinetrak.ninja.controllers;
 
 import com.google.inject.Singleton;
-import net.spinetrak.gpx.*;
+import net.spinetrak.gpx.GPXFile;
+import net.spinetrak.gpx.GPXParams;
+import net.spinetrak.gpx.GPXWriter;
+import net.spinetrak.gpx.NMEAFile;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -24,13 +27,14 @@ import ninja.params.PathParam;
 
 import java.util.List;
 
+
 @Singleton
 public class ApplicationController
 {
 
   public Result create()
   {
-    final NMEAFile nmeaFile = getNMEAFile();
+    final NMEAFile nmeaFile = new NMEAFile();
     final Result result = Results.html();
     result.render("nmeaFile", nmeaFile);
     result.render("editActive", "");
@@ -41,7 +45,7 @@ public class ApplicationController
 
   public Result index()
   {
-    final List<GPXFile> gpxFiles = getGPXFiles();
+    final List<GPXFile> gpxFiles = GPXFile.getGPXFiles();
     final Result result = Results.html();
     result.render("gpxFiles", gpxFiles);
     result.render("editActive", "active");
@@ -52,9 +56,6 @@ public class ApplicationController
 
   public Result postGPXParams(final Context context_, final GPXParams params_)
   {
-
-    params_.setNmeaFile(getNMEAFile().getFullFileName());
-    params_.setGpxDir(getLatestGPXFile().getDirectory());
     final GPXWriter gpxWriter = new GPXWriter(params_);
     gpxWriter.write();
     return Results.redirect("/");
@@ -70,10 +71,10 @@ public class ApplicationController
   {
     if (id_ == null || id_.isEmpty() || "current".equals(id_))
     {
-      return getLatestGPXFile();
+      return GPXFile.getLatestGPXFile();
     }
 
-    for (final GPXFile gpxFile : getGPXFiles())
+    for (final GPXFile gpxFile : GPXFile.getGPXFiles())
     {
       if (id_.equals(gpxFile.getName()))
       {
@@ -81,21 +82,7 @@ public class ApplicationController
       }
     }
 
-    return getLatestGPXFile();
+    return GPXFile.getLatestGPXFile();
   }
 
-  private List<GPXFile> getGPXFiles()
-  {
-    return new GPXReader().getGPXFiles();
-  }
-
-  private GPXFile getLatestGPXFile()
-  {
-    return new GPXReader().getLatestGPXFile();
-  }
-
-  private NMEAFile getNMEAFile()
-  {
-    return new GPXReader().getNMEAFile();
-  }
 }

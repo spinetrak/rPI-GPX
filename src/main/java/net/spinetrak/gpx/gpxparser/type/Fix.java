@@ -1,4 +1,3 @@
-
 package net.spinetrak.gpx.gpxparser.type;
 
 /**

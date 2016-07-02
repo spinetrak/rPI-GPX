@@ -5,8 +5,6 @@ public class GPXParams
   private int _dateCorrection;
   private long _from;
   private boolean _gpsFixCorrection;
-  private String _gpxDir;
-  private String _nmeaFile;
   private long _to;
 
   public int getDateCorrection()
@@ -17,16 +15,6 @@ public class GPXParams
   public long getFrom()
   {
     return _from;
-  }
-
-  public String getGpxDir()
-  {
-    return _gpxDir;
-  }
-
-  public String getNmeaFile()
-  {
-    return _nmeaFile;
   }
 
   public long getTo()
@@ -52,16 +40,6 @@ public class GPXParams
   public void setGpsFixCorrection(final boolean gpsFixCorrection_)
   {
     _gpsFixCorrection = gpsFixCorrection_;
-  }
-
-  public void setGpxDir(final String gpxDir_)
-  {
-    _gpxDir = gpxDir_;
-  }
-
-  public void setNmeaFile(final String nmeaFile_)
-  {
-    _nmeaFile = nmeaFile_;
   }
 
   public void setTo(final long to_)

@@ -6,24 +6,22 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static net.spinetrak.gpx.GPXReader.DTF;
-import static net.spinetrak.gpx.GPXReader.SDF;
+import static net.spinetrak.gpx.GPXFile.DTF;
+import static net.spinetrak.gpx.GPXFile.SDF;
 
-public class NMEAFile
+public class NMEAFile extends GPSFile
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.NMEAFile");
-  final File _file;
   long _from;
   int _points;
   long _to;
 
-  public NMEAFile(final File file_)
+  public NMEAFile()
   {
-    _file = file_;
+    super(GPSFile.NMEA_FILE.toFile());
     init();
   }
 
@@ -32,24 +30,9 @@ public class NMEAFile
     return new SimpleDateFormat(SDF).format(new Date(_from));
   }
 
-  public String getFullFileName()
-  {
-    return _file.getAbsolutePath();
-  }
-
-  public String getName()
-  {
-    return _file.getName();
-  }
-
   public int getPoints()
   {
     return _points;
-  }
-
-  public long getTimestamp()
-  {
-    return _file.lastModified();
   }
 
   public String getTo()
@@ -67,9 +50,9 @@ public class NMEAFile
     String toStr = null;
     try
     {
-      it = FileUtils.lineIterator(_file, "UTF-8");
-      from = GPXReader.getFileTime(_file, GPXReader.CREATION_TIME);
-      to = GPXReader.getFileTime(_file, GPXReader.LASTMODIFIED_TIME);
+      it = FileUtils.lineIterator(getFile(), "UTF-8");
+      from = GPSFile.getFileTime(getFile(), GPSFile.CREATION_TIME);
+      to = GPSFile.getFileTime(getFile(), GPSFile.LASTMODIFIED_TIME);
 
       while (it.hasNext())
       {
