@@ -22,7 +22,7 @@ import java.util.Date;
  */
 public class GPXWriter
 {
-  private static final String GPX_DIR = "/home/pi/tracks/gpx/";
+  //private static final String GPX_DIR = "/home/pi/tracks/gpx/";
   /*
 cp /home/pi/scripts/template.html /home/pi/scripts/$TARGET.html
 /usr/bin/perl -pi -e 's/__URL__/$TARGET.gpx/g' /home/pi/scripts/$TARGET.html
@@ -35,13 +35,15 @@ sudo mv /home/pi/scripts/$TARGET.html /home/pi/tracks/gpx/
 ls -al /home/pi/tracks/gpx/
    */
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.GPXWriter");
-  private static final String NMEA_FILE = "/home/pi/tracks/nmea.txt";
+  private static String OS = System.getProperty("os.name").toLowerCase();
+  private static final String CMD = (OS.indexOf(
+    "mac") >= 0) ? "/Applications/GPSBabelFE.app/Contents/MacOS/gpsbabel" : "/usr/bin/sudo /usr/bin/gpsbabel";
   private final boolean _backup;
   private final Integer _date;
   private final boolean _fix;
   private final long _from;
   private final String _gpxDir;
-  private final File _nmeaFile;
+  private final NMEAFile _nmeaFile;
   private final String _outfile;
   private final long _to;
 
@@ -73,10 +75,10 @@ ls -al /home/pi/tracks/gpx/
     {
       throw new IllegalArgumentException("To is out of range: " + to_);
     }
-    _nmeaFile = GPSFile.NMEA_FILE.toFile();
-    if (!_nmeaFile.exists() || !_nmeaFile.canRead())
+    _nmeaFile = new NMEAFile();
+    if (!_nmeaFile.getFile().exists() || !_nmeaFile.getFile().canRead())
     {
-      throw new IllegalArgumentException("NMEA file does not exist or is not readable: " + _nmeaFile.
+      throw new IllegalArgumentException("NMEA file does not exist or is not readable: " + _nmeaFile.getFile().
         getAbsolutePath());
     }
 
@@ -98,8 +100,7 @@ ls -al /home/pi/tracks/gpx/
     _date = date_;
     _outfile = buildOutFile();
     _backup = backup_;
-    out("Using  from: " + _from + ";  to: " + _to + "; nmea: " + _nmeaFile.
-      getAbsolutePath() + "; fix: " + _fix + "; date: " + _date + "; outfile: " + _outfile);
+    out(this.toString());
   }
 
   public static void error(final String error_)
@@ -120,12 +121,6 @@ ls -al /home/pi/tracks/gpx/
           .describedAs("from").defaultsTo(0L);
         accepts("t", "to").withRequiredArg().ofType(Long.class)
           .describedAs("to").defaultsTo(0L);
-        accepts("i", "input").withRequiredArg().ofType(String.class).
-          describedAs("input").
-          defaultsTo(NMEA_FILE);
-        accepts("o", "output").withRequiredArg().ofType(String.class).
-          describedAs("input").
-          defaultsTo(GPX_DIR);
         accepts("g", "gpsfix_correction");
         accepts("b", "backup nmea");
         accepts("h", "help");
@@ -177,13 +172,27 @@ ls -al /home/pi/tracks/gpx/
   {
     final long from = (Long) options.valueOf("f");
     final long to = (Long) options.valueOf("t");
-    final String input = (String) options.valueOf("i");
     final boolean fix = options.has("g");
     final boolean backup = options.has("b");
     final int date = (Integer) options.valueOf("d");
 
     final GPXWriter gpx = new GPXWriter(from, to, fix, date, backup);
     return gpx;
+  }
+
+  @Override
+  public String toString()
+  {
+    return "GPXWriter{" +
+      "_backup=" + _backup +
+      ", _date=" + _date +
+      ", _fix=" + _fix +
+      ", _from=" + _from +
+      ", _gpxDir='" + _gpxDir + '\'' +
+      ", _nmeaFile=" + _nmeaFile +
+      ", _outfile='" + _outfile + '\'' +
+      ", _to=" + _to +
+      '}';
   }
 
   public void write()
@@ -196,23 +205,24 @@ ls -al /home/pi/tracks/gpx/
      *
      */
     final String cmd
-      = "/usr/bin/sudo /usr/bin/gpsbabel -D 3 "
+      = CMD + " -D 3 "
       + buildNmeaOptions()
-      + " -f " + _nmeaFile.getAbsolutePath() + " "
+      + " -f " + _nmeaFile.getFile().getAbsolutePath() + " "
       + buildTrackOptions()
-      + " -x position,distance=10m"
+      + " -x simplify,count=" + _nmeaFile.getPoints() / 3
       + " -o gpx"
       + " -F " + _outfile;
 
+    out("Running under OS [" + OS + "]");
     out("Running cmd \"" + cmd + "\"");
     out(new CommandExecutioner().executeCommand(cmd));
   }
 
   private void backupNmea()
   {
-    if (_nmeaFile.exists() && _nmeaFile.canWrite())
+    if (_nmeaFile.getFile().exists() && _nmeaFile.getFile().canWrite())
     {
-      final String oldNmea = _nmeaFile.getAbsolutePath();
+      final String oldNmea = _nmeaFile.getFile().getAbsolutePath();
       final StringBuffer newNmea = new StringBuffer(oldNmea);
 
       final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd_HH-mm-ss");

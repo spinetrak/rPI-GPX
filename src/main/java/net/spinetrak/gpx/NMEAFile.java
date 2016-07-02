@@ -40,6 +40,16 @@ public class NMEAFile extends GPSFile
     return new SimpleDateFormat(SDF).format(new Date(_to));
   }
 
+  @Override
+  public String toString()
+  {
+    return "NMEAFile{" +
+      "_from=" + _from +
+      ", _points=" + _points +
+      ", _to=" + _to +
+      '}';
+  }
+
   private void init()
   {
     int count = 0;
