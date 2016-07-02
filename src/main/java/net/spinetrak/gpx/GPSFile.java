@@ -41,6 +41,11 @@ public class GPSFile
     return new Date(view.lastModifiedTime().toMillis());
   }
 
+  public void delete()
+  {
+    _file.delete();
+  }
+
   public String getDirectory()
   {
     return _file.getParentFile().getAbsolutePath();

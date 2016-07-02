@@ -43,6 +43,13 @@ public class ApplicationController
     return result;
   }
 
+  public Result delete(final @PathParam("id") String id_)
+  {
+    final GPXFile gpxFile = getGPXFile(id_);
+    gpxFile.delete();
+    return Results.redirect("/");
+  }
+
   public Result index()
   {
     final List<GPXFile> gpxFiles = GPXFile.getGPXFiles();
