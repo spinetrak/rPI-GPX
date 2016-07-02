@@ -104,9 +104,7 @@ public class GPXFile extends GPSFile
     int count = 0;
     long from = 0;
     long to = 0;
-    LatLng northEast;
-    LatLng southWest;
-    RectangularWindow window = null;
+    RectangularWindow window = new RectangularWindow(new LatLng(0, 0), new LatLng(0, 0));
     double lon = 0;
     GPX gpx = null;
     try
@@ -137,17 +135,11 @@ public class GPXFile extends GPSFile
                   count++;
                   final Date newDate = wp.getTime();
                   final LatLng point = new LatLng(wp.getLatitude(), wp.getLongitude());
-                  if (window == null)
-                  {
-                    window = new RectangularWindow(point, point);
-                  }
-                  else
-                  {
                     window = setEast(point, window);
                     window = setSouth(point, window);
                     window = setWest(point, window);
                     window = setNorth(point, window);
-                  }
+
 
                   final long newDateMillis = newDate != null ? newDate.getTime() : 0;
                   if (newDateMillis == 0)
@@ -191,7 +183,6 @@ public class GPXFile extends GPSFile
 
     if (windowEast < pointEast)
     {
-      LOGGER.info("setting east: from " + windowEast + " to " + pointEast);
       return new RectangularWindow(new LatLng(window_.getMaxLatitude(), pointEast),
                                    new LatLng(window_.getMinLatitude(), window_.getLeftLongitude()));
     }
@@ -205,7 +196,6 @@ public class GPXFile extends GPSFile
 
     if (windowNorth < pointNorth)
     {
-      LOGGER.info("setting north: from " + windowNorth + " to " + pointNorth);
       return new RectangularWindow((new LatLng(pointNorth, window_.getRightLongitude())),
                                    new LatLng(window_.getMinLatitude(), window_.getLeftLongitude()));
     }
@@ -219,7 +209,6 @@ public class GPXFile extends GPSFile
 
     if (windowSouth > pointSouth)
     {
-      LOGGER.info("setting south: from " + windowSouth + " to " + pointSouth);
       return new RectangularWindow((new LatLng(window_.getMaxLatitude(), window_.getRightLongitude())),
                                    new LatLng(pointSouth, window_.getLeftLongitude()));
     }
@@ -233,7 +222,6 @@ public class GPXFile extends GPSFile
 
     if (windowWest > pointWest)
     {
-      LOGGER.info("setting west: from " + windowWest + " to " + pointWest);
       return new RectangularWindow((new LatLng(window_.getMaxLatitude(), window_.getRightLongitude())),
                                    new LatLng(window_.getMinLatitude(), pointWest));
     }
