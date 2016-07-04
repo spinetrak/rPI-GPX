@@ -15,10 +15,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GPXFile extends GPSFile
 {
@@ -44,11 +41,29 @@ public class GPXFile extends GPSFile
       {
         gpxFiles.add(new GPXFile(path.toFile()));
       }
+      Collections.sort(gpxFiles, new Comparator<GPXFile>()
+      {
+        public int compare(final GPXFile o1, final GPXFile o2)
+        {
+          try
+          {
+            return Files.getLastModifiedTime(o1.getFile().toPath()).compareTo(
+              Files.getLastModifiedTime(o2.getFile().toPath()));
+          }
+          catch (final IOException ex_)
+          {
+            LOGGER.error("", ex_);
+            return 0;
+          }
+        }
+      });
     }
     catch (final IOException ex_)
     {
       LOGGER.error("", ex_);
     }
+
+
     return gpxFiles;
   }
 
