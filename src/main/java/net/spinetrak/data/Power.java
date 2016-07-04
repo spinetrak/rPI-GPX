@@ -39,7 +39,6 @@ public class Power
 
   private void parse(final String line_)
   {
-    LOGGER.info("Parsing line [" + line_ + "]");
     if (null == line_ || line_.isEmpty() || line_.indexOf('V') < 0 || line_.indexOf('/') < 0)
     {
       return;
@@ -51,13 +50,15 @@ public class Power
     }
 
     final String source = tokens[0];
+    LOGGER.info("Parsing source [" + source + "]");
     if (null != source && !source.isEmpty() && source.length() == 1 && (source.equals("P") || source.equals("B")))
     {
       setSource(source.equals("P") ? 0 : 1);
     }
 
     final String voltage = tokens[2];
-    if (null != voltage && !voltage.isEmpty() && voltage.indexOf('V') == (voltage.length() - 1))
+    LOGGER.info("Parsing voltage [" + voltage + "]");
+    if (null != voltage && !voltage.isEmpty() && voltage.indexOf('V') > 3)
     {
       setVoltage(Float.parseFloat(voltage.substring(0, voltage.indexOf('V'))));
     }
