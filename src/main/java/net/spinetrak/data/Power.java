@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 public class Power
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.data.Power");
-  private double source;
-  private double voltage;
+  private double source = 4.75;
+  private double voltage = 5.0;
 
   public Power()
   {
