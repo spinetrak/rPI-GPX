@@ -47,8 +47,8 @@ public class GPXFile extends GPSFile
         {
           try
           {
-            return Files.getLastModifiedTime(o1.getFile().toPath()).compareTo(
-              Files.getLastModifiedTime(o2.getFile().toPath()));
+            return Files.getLastModifiedTime(o2.getFile().toPath()).compareTo(
+              Files.getLastModifiedTime(o1.getFile().toPath()));
           }
           catch (final IOException ex_)
           {
