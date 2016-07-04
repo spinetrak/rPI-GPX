@@ -1,38 +1,120 @@
-<#import "../layout/defaultLayout.ftl.html" as layout>
-    <@layout.myLayout "rpinetrak">
+<html>
+<head>
+    <title>rpinetrak</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script type="text/javascript" src="/assets/js/aja.min.js"></script>
+    <script type="text/javascript" src="/assets/js/smoothie.js"></script>
+    <link href="/assets/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/webjars/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 
+
+    <script type="text/javascript">
+        var voltage = new TimeSeries();
+        setInterval(function () {
+            aja().url('/data/power/voltage').on('success', function (data) {
+                voltage.append(new Date().getTime(), data.voltage);
+            }).go();
+        }, 1000);
+
+        var source = new TimeSeries();
+        setInterval(function () {
+            aja().url('/data/power/source').on('success', function (data) {
+                source.append(new Date().getTime(), data.source);
+            }).go();
+        }, 5000);
+
+        var latitude = new TimeSeries();
+        setInterval(function () {
+            aja().url('/data/location/latitude').on('success', function (data) {
+                latitude.append(new Date().getTime(), data.latitude);
+            }).go();
+        }, 1000);
+
+        function createTimeline() {
+            var voltageChart = new SmoothieChart({
+                interpolation: 'step',
+                grid: {fillStyle: '#000000', strokeStyle: '#ffffff', verticalSections: 10},
+                labels: {fillStyle: '#000000', fontSize: 15},
+                millisPerPixel: 1000,
+                horizontalLines: [{color: '#ff0000', lineWidth: 1, value: 5.75}, {
+                    color: '#ff0000',
+                    lineWidth: 1,
+                    value: 6.25
+                }]
+            });
+            var voltageCanvas = document.getElementById('voltageChart');
+
+            voltageChart.addTimeSeries(voltage, {lineWidth: 1.0, strokeStyle: '#00ff00'});
+            voltageChart.addTimeSeries(source, {
+                lineWidth: 1.0,
+                strokeStyle: '#ff0000',
+                fillStyle: 'rgba(255,0,0,0.30)'
+            });
+            voltageChart.streamTo(voltageCanvas, 1000);
+
+            var latitudeChart = new SmoothieChart({
+                interpolation: 'step',
+                grid: {fillStyle: '#000000', strokeStyle: '#ffffff', verticalSections: 10},
+                labels: {fillStyle: '#000000', fontSize: 15},
+                millisPerPixel: 1000,
+                horizontalLines: [{color: '#ff0000', lineWidth: 1, value: 5.75}, {
+                    color: '#ff0000',
+                    lineWidth: 1,
+                    value: 6.25
+                }]
+            });
+            var latitudeCanvas = document.getElementById('latitudeChart');
+
+            latitudeChart.addTimeSeries(latitude, {lineWidth: 1.0, strokeStyle: '#00ff00'});
+            latitudeChart.streamTo(latitudeCanvas, 1000);
+        }
+    </script>
+
+</head>
+
+<body onload="createTimeline()">
+
+<div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
-        <div class="lead">
-            edit tracks
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" contenteditable="false">rpinetrak</a>
         </div>
-
-        <div class="table-responsive">
-            <table class="table">
-                <tr>
-                    <th>track</th>
-                    <th>from</th>
-                    <th>to</th>
-                    <th>points</th>
-                    <th>action</th>
-                </tr>
-                <#list gpxFiles as gpxFile>
-                    <tr>
-                        <td><a href="/assets/tracks/gpx/${gpxFile.name}">${gpxFile.name}</a></td>
-                        <td>${gpxFile.from}</td>
-                        <td>${gpxFile.to}</td>
-                        <td>${gpxFile.points}</td>
-                        <td>
-                            <a href="/track/${gpxFile.name}">
-                                <button type="button" class="btn btn-success btn-xs">view</button>
-                            </a>
-                            <a href="/track/delete/${gpxFile.name}">
-                                <button type="button" class="btn btn-danger btn-xs">delete</button>
-                            </a>
-                        </td>
-                    </tr>
-                </#list>
-            </table>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="${editActive}"><a href="/track/edit" contenteditable="false">edit</a></li>
+                <li class="${currentActive}"><a href="/track/current" contenteditable="false">current</a></li>
+                <li class="${newActive}"><a href="/track/new" contenteditable="false">new</a></li>
+            </ul>
         </div>
     </div>
-
-</@layout.myLayout>
+</div>
+<div class="container">
+    <div class="lead">
+        edit tracks
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <td>
+                    <canvas id="voltageChart" width="1000" height="200"></canvas>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <canvas id="latitudeChart" width="1000" height="200"></canvas>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

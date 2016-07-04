@@ -77,12 +77,21 @@ public class ApplicationController
     return Results.redirect("/");
   }
 
-  public Result index()
+  public Result edit()
   {
     final List<GPXFile> gpxFiles = GPXFile.getGPXFiles();
     final Result result = Results.html();
     result.render("gpxFiles", gpxFiles);
     result.render("editActive", "active");
+    result.render("currentActive", "");
+    result.render("newActive", "");
+    return result;
+  }
+
+  public Result index()
+  {
+    final Result result = Results.html();
+    result.render("editActive", "");
     result.render("currentActive", "");
     result.render("newActive", "");
     return result;

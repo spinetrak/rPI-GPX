@@ -16,6 +16,7 @@
 package net.spinetrak.ninja.conf;
 
 import net.spinetrak.ninja.controllers.ApplicationController;
+import net.spinetrak.ninja.controllers.DataController;
 import ninja.AssetsController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
@@ -26,14 +27,18 @@ public class Routes implements ApplicationRoutes
   @Override
   public void init(Router router)
   {
-
     router.GET().route("/").with(ApplicationController.class, "index");
+    router.GET().route("/track/edit").with(ApplicationController.class, "edit");
     router.GET().route("/track/new").with(ApplicationController.class, "create");
     router.POST().route("/track/new").with(ApplicationController.class, "postGPXParams");
     router.GET().route("/track/delete/nmea/{id}").with(ApplicationController.class, "deleteNmea");
     router.GET().route("/track/backup/nmea/{id}").with(ApplicationController.class, "backupNmea");
     router.GET().route("/track/delete/{id}").with(ApplicationController.class, "delete");
     router.GET().route("/track/{id}").with(ApplicationController.class, "view");
+
+    router.GET().route("/data/power/voltage").with(DataController.class, "powerVoltage");
+    router.GET().route("/data/power/source").with(DataController.class, "powerSource");
+    router.GET().route("/data/location/latitude").with(DataController.class, "locationLatitude");
 
     ///////////////////////////////////////////////////////////////////////
     // Assets (pictures / javascript)
