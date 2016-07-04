@@ -37,6 +37,12 @@
                                        placeholder="YYYYMMDD">
                             </div>
                             <button type="submit" class="btn btn-warning btn-xs">make gpx</button>
+                            <a href="/track/backup/nmea/${nmeaFile.name}">
+                                <button type="button" role="button" class="btn btn-warning btn-xs">backup</button>
+                            </a>
+                            <a href="/track/delete/nmea/${nmeaFile.name}">
+                                <button type="button" role="button" class="btn btn-danger btn-xs">delete</button>
+                            </a>
                         </form>
                     </td>
                 </tr>

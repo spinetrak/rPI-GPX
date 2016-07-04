@@ -5,8 +5,6 @@ import com.javadocmd.simplelatlng.util.LengthUnit;
 import com.javadocmd.simplelatlng.window.RectangularWindow;
 import net.spinetrak.gpx.gpxparser.GPXParser;
 import net.spinetrak.gpx.gpxparser.modal.*;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +22,6 @@ import java.util.Set;
 
 public class GPXFile extends GPSFile
 {
-  protected static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HHmmss.SSS");
-  protected static final String SDF = "yyyy-MM-dd HH:mm:ss";
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.GPXFile");
   private LatLng _center;
   private long _from;

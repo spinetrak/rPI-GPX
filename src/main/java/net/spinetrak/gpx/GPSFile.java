@@ -1,5 +1,8 @@
 package net.spinetrak.gpx;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,12 +15,14 @@ import java.util.Date;
 public class GPSFile
 {
   protected static final int CREATION_TIME = 0;
+  protected static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HHmmss.SSS");
   protected final static Path GPX_DIR = Paths.get(".").relativize(
     Paths.get("rPI-GPX/src/main/java/assets/tracks/gpx")).toAbsolutePath().normalize();
   protected static final int LASTACCESS_TIME = 2;
   protected static final int LASTMODIFIED_TIME = 1;
   protected final static Path NMEA_FILE = Paths.get(".").relativize(
     Paths.get("rPI-GPX/src/main/java/assets/tracks/nmea.txt")).toAbsolutePath().normalize();
+  protected static final String SDF = "yyyy-MM-dd HH:mm:ss";
   private final File _file;
 
   public GPSFile(final File file_)
@@ -39,6 +44,11 @@ public class GPSFile
       return new Date(view.lastAccessTime().toMillis());
     }
     return new Date(view.lastModifiedTime().toMillis());
+  }
+
+  public void backup()
+  {
+    _file.renameTo(new File(_file.getAbsolutePath() + ".bak"));
   }
 
   public void delete()

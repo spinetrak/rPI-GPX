@@ -9,9 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static net.spinetrak.gpx.GPXFile.DTF;
-import static net.spinetrak.gpx.GPXFile.SDF;
-
 public class NMEAFile extends GPSFile
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.NMEAFile");
@@ -94,7 +91,7 @@ public class NMEAFile extends GPSFile
   private long parseDate(final Date date_, final String time_)
   {
     final DateTime dateTime = new DateTime(date_).withTimeAtStartOfDay();
-    final DateTime time = DTF.parseDateTime(time_);
+    final DateTime time = DTF.parseDateTime(time_ != null ? time_ : "000000.000");
     return dateTime.withTime(time.getHourOfDay(), time.getMinuteOfHour(), time.getSecondOfMinute(),
                              time.getMillisOfSecond()).toDate().getTime();
   }

@@ -25,6 +25,8 @@ import ninja.Result;
 import ninja.Results;
 import ninja.params.PathParam;
 import ninja.validation.JSR303Validation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -32,6 +34,17 @@ import java.util.List;
 @Singleton
 public class ApplicationController
 {
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.ninja.controllers.ApplicationController");
+
+  public Result backupNmea(final @PathParam("id") String id_)
+  {
+    final NMEAFile nmeaFile = new NMEAFile();
+    if (nmeaFile != null && nmeaFile.getName().equals(id_))
+    {
+      nmeaFile.backup();
+    }
+    return Results.redirect("/");
+  }
 
   public Result create()
   {
@@ -47,7 +60,20 @@ public class ApplicationController
   public Result delete(final @PathParam("id") String id_)
   {
     final GPXFile gpxFile = getGPXFile(id_);
-    gpxFile.delete();
+    if (gpxFile != null)
+    {
+      gpxFile.delete();
+    }
+    return Results.redirect("/");
+  }
+
+  public Result deleteNmea(final @PathParam("id") String id_)
+  {
+    final NMEAFile nmeaFile = new NMEAFile();
+    if (nmeaFile != null && nmeaFile.getName().equals(id_))
+    {
+      nmeaFile.delete();
+    }
     return Results.redirect("/");
   }
 

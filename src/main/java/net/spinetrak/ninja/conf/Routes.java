@@ -30,6 +30,8 @@ public class Routes implements ApplicationRoutes
     router.GET().route("/").with(ApplicationController.class, "index");
     router.GET().route("/track/new").with(ApplicationController.class, "create");
     router.POST().route("/track/new").with(ApplicationController.class, "postGPXParams");
+    router.GET().route("/track/delete/nmea/{id}").with(ApplicationController.class, "deleteNmea");
+    router.GET().route("/track/backup/nmea/{id}").with(ApplicationController.class, "backupNmea");
     router.GET().route("/track/delete/{id}").with(ApplicationController.class, "delete");
     router.GET().route("/track/{id}").with(ApplicationController.class, "view");
 
