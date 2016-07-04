@@ -13,7 +13,6 @@ public class Power
   public Power()
   {
     final String power = new CommandExecutioner().executeCommand("/usr/share/i3blocks/battery_raspi");
-    LOGGER.info("Got power: " + power);
     parse(power);
   }
 
@@ -50,14 +49,12 @@ public class Power
     }
 
     final String source = tokens[0];
-    LOGGER.info("Parsing source [" + source + "]");
-    if (null != source && !source.isEmpty() && source.length() == 1 && (source.equals("P") || source.equals("B")))
+    if (null != source && !source.isEmpty() && (source.contains("P") || source.contains("B")))
     {
-      setSource(source.equals("P") ? 4.75 : 5.25);
+      setSource(source.contains("P") ? 4.75 : 5.25);
     }
 
     final String voltage = tokens[2];
-    LOGGER.info("Parsing voltage [" + voltage + "]");
     if (null != voltage && !voltage.isEmpty() && voltage.indexOf('V') > 3)
     {
       setVoltage(Float.parseFloat(voltage.substring(0, voltage.indexOf('V'))));
