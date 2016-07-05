@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -57,27 +58,30 @@ public class NMEAFile extends GPSFile
     String toStr = null;
     try
     {
-      it = FileUtils.lineIterator(getFile(), "UTF-8");
-      from = GPSFile.getFileTime(getFile(), GPSFile.CREATION_TIME);
-      to = GPSFile.getFileTime(getFile(), GPSFile.LASTMODIFIED_TIME);
-
-      while (it.hasNext())
+      final File file = getFile();
+      if (file != null && file.exists() && file.canRead())
       {
-        final String line = it.nextLine();
-        if (line.contains("GGA"))
+        it = FileUtils.lineIterator(file, "UTF-8");
+        from = GPSFile.getFileTime(file, GPSFile.CREATION_TIME);
+        to = GPSFile.getFileTime(file, GPSFile.LASTMODIFIED_TIME);
+
+        while (it.hasNext())
         {
-          count++;
-          if (count == 1)
+          final String line = it.nextLine();
+          if (line.contains("GGA"))
           {
-            _from = parseDate(from, parseTime(line));
+            count++;
+            if (count == 1)
+            {
+              _from = parseDate(from, parseTime(line));
+            }
+            toStr = parseTime(line);
           }
-          toStr = parseTime(line);
         }
       }
     }
     catch (final Exception ex_)
     {
-      ex_.printStackTrace();
       LOGGER.error("", ex_);
     }
     finally
