@@ -69,17 +69,7 @@ public class GPXFile extends GPSFile
 
   public static GPXFile getLatestGPXFile()
   {
-    long timestamp = 0;
-    GPXFile gpxFile = null;
-    for (final GPXFile file : getGPXFiles())
-    {
-      final long newTimestamp = file.getTimestamp();
-      if (newTimestamp > timestamp)
-      {
-        gpxFile = file;
-      }
-    }
-    return gpxFile;
+    return getGPXFiles().get(0);
   }
 
   public LatLng getCenter()
