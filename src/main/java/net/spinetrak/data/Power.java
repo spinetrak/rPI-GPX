@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 public class Power
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.data.Power");
-  private double source = 4.75;
+  private String source = "P";
   private double voltage = 5.0;
 
   public Power()
@@ -16,7 +16,7 @@ public class Power
     parse(power);
   }
 
-  public double getSource()
+  public String getSource()
   {
     return source;
   }
@@ -26,7 +26,7 @@ public class Power
     return voltage;
   }
 
-  public void setSource(final double source_)
+  public void setSource(final String source_)
   {
     source = source_;
   }
@@ -51,7 +51,7 @@ public class Power
     final String source = tokens[0];
     if (null != source && !source.isEmpty() && (source.contains("P") || source.contains("B")))
     {
-      setSource(source.contains("P") ? 4.75 : 5.25);
+      setSource(source.contains("P") ? "P" : "B");
     }
 
     final String voltage = tokens[2];
