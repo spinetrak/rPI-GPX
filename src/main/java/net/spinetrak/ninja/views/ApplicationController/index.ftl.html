@@ -11,27 +11,6 @@
     <script type="text/javascript" src="/assets/js/smoothie.js"></script>
 
     <script type="text/javascript">
-        var voltage = new TimeSeries();
-        setInterval(function () {
-            aja().url('/data/power/voltage').on('success', function (data) {
-                voltage.append(new Date().getTime(), data.voltage);
-            }).go();
-        }, 1000);
-
-        var source = new TimeSeries();
-        setInterval(function () {
-            aja().url('/data/power/source').on('success', function (data) {
-                source.append(new Date().getTime(), data.source);
-            }).go();
-        }, 5000);
-
-        var latitude = new TimeSeries();
-        setInterval(function () {
-            aja().url('/data/location/latitude').on('success', function (data) {
-                latitude.append(new Date().getTime(), data.latitude);
-            }).go();
-        }, 1000);
-
         function createTimeline() {
             var voltageChart = new SmoothieChart({
                 maxValue: 5.5,
@@ -40,34 +19,62 @@
                 grid: {fillStyle: '#000000', strokeStyle: '#ffffff', verticalSections: 10},
                 labels: {fillStyle: '#000000', fontSize: 15},
                 millisPerPixel: 1000,
-                horizontalLines: [{color: '#ff0000', lineWidth: 1, value: 5.75}, {
+                horizontalLines: [{color: '#ff0000', lineWidth: 1, value: 4.75}, {
                     color: '#ff0000',
                     lineWidth: 1,
-                    value: 6.25
+                    value: 5.25
                 }]
             });
-            var voltageCanvas = document.getElementById('voltageChart');
-
-            voltageChart.addTimeSeries(voltage, {lineWidth: 1.0, strokeStyle: '#00ff00'});
-            voltageChart.addTimeSeries(source, {
-                lineWidth: 1.0,
-                strokeStyle: '#ff0000',
-                fillStyle: 'rgba(255,0,0,0.30)'
-            });
-            voltageChart.streamTo(voltageCanvas, 1000);
-
+            
             var latitudeChart = new SmoothieChart({
                 interpolation: 'step',
                 grid: {fillStyle: '#000000', strokeStyle: '#ffffff', verticalSections: 10},
                 labels: {fillStyle: '#000000', fontSize: 15},
-                millisPerPixel: 1000,
-                horizontalLines: [{
-                    color: '#ff0000', lineWidth: 1, value: 4.75
-                }, {
-                    color: '#ff0000', lineWidth: 1, value: 5.25
-                }]
-            });
+                millisPerPixel: 1000
+            });            
+            
+            var voltageCanvas = document.getElementById('voltageChart');
             var latitudeCanvas = document.getElementById('latitudeChart');
+            
+            var voltage = new TimeSeries();
+            setInterval(function () {
+                aja().url('/data/power/voltage').on('success', function (data) {
+                    var newVoltage = data.voltage;
+                    voltage.append(new Date().getTime(), newVoltage);
+                }).go();
+            }, 1000);
+
+            var red = '#ff0000';
+			var green = '#00ff00';
+            var color = green;
+            setInterval(function () {
+                aja().url('/data/power/source').on('success', function (data) {
+                    var newSource = data.source;
+                    if(newSource == "B" && color != red)
+                    {
+                        color = red; 
+                        voltageChart.removeTimeSeries(voltage);
+					    voltageChart.addTimeSeries(voltage, {lineWidth: 1.0, strokeStyle: color});
+                    }
+                    else if(newSource == "P" && color != green)
+                    {
+                        color = green;
+                        voltageChart.removeTimeSeries(voltage);
+					    voltageChart.addTimeSeries(voltage, {lineWidth: 1.0, strokeStyle: color});
+                    }
+                }).go();
+            }, 1000);
+
+            var latitude = new TimeSeries();
+            setInterval(function () {
+                aja().url('/data/location/latitude').on('success', function (data) {
+                    var newLatitude = data.latitude;
+                    latitude.append(new Date().getTime(), newLatitude);
+                }).go();
+            }, 1000);
+
+            voltageChart.addTimeSeries(voltage, {lineWidth: 1.0, strokeStyle: '#00ff00'});
+            voltageChart.streamTo(voltageCanvas, 1000);
 
             latitudeChart.addTimeSeries(latitude, {lineWidth: 1.0, strokeStyle: '#00ff00'});
             latitudeChart.streamTo(latitudeCanvas, 1000);
