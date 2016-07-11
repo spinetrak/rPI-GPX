@@ -204,7 +204,7 @@ ls -al /home/pi/tracks/gpx/
       + buildNmeaOptions()
       + " -f " + _nmeaFile.getFile().getAbsolutePath() + " "
       + buildTrackOptions()
-      + " -x simplify,count=" + _nmeaFile.getPoints() / 3
+      + " -x simplify,count=1500"
       + " -o gpx,gpxver=1.1"
       + " -F " + _outfile;
 

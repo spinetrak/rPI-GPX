@@ -43,7 +43,7 @@ public class ApplicationController
     {
       nmeaFile.backup();
     }
-    return Results.redirect("/");
+    return Results.redirect("/track/edit");
   }
 
   public Result create()
@@ -64,7 +64,7 @@ public class ApplicationController
     {
       gpxFile.delete();
     }
-    return Results.redirect("/");
+    return Results.redirect("/track/edit");
   }
 
   public Result deleteNmea(final @PathParam("id") String id_)
@@ -101,7 +101,7 @@ public class ApplicationController
   {
     final GPXWriter gpxWriter = new GPXWriter(params_);
     gpxWriter.write();
-    return Results.redirect("/");
+    return Results.redirect("/track/current");
   }
 
   public Result view(final @PathParam("id") String id_)
