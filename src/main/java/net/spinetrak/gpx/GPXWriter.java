@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 spinetrak
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package net.spinetrak.gpx;
 
 import joptsimple.OptionParser;
@@ -36,8 +60,8 @@ ls -al /home/pi/tracks/gpx/
    */
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.gpx.GPXWriter");
   private static String OS = System.getProperty("os.name").toLowerCase();
-  private static final String CMD = (OS.indexOf(
-    "mac") >= 0) ? "/Applications/GPSBabelFE.app/Contents/MacOS/gpsbabel" : "/usr/bin/sudo /usr/bin/gpsbabel";
+  private static final String CMD = (OS.contains(
+    "mac")) ? "/Applications/GPSBabelFE.app/Contents/MacOS/gpsbabel" : "/usr/bin/sudo /usr/bin/gpsbabel";
   private final boolean _backup;
   private final Integer _date;
   private final long _from;
@@ -54,16 +78,8 @@ ls -al /home/pi/tracks/gpx/
     LOGGER.info(gpxParams_.toString());
   }
 
-  /**
-   * Constructor for objects of class GPXWriter
-   *
-   * @param from_
-   * @param to_
-   * @param date_
-   * @param backup_
-   */
-  public GPXWriter(final long from_, final long to_,
-                   final int date_, final boolean backup_)
+  private GPXWriter(final long from_, final long to_,
+                    final int date_, final boolean backup_)
   {
     if (from_ != 0 && (from_ < 2016 || from_ > 205001010000L))
     {
@@ -100,15 +116,6 @@ ls -al /home/pi/tracks/gpx/
     out(this.toString());
   }
 
-  public static void error(final String error_)
-  {
-    LOGGER.error(error_);
-    System.exit(1);
-  }
-
-  /**
-   * @param args_
-   */
   public static void main(final String args_[])
   {
     final OptionParser parser = new OptionParser()
@@ -165,6 +172,12 @@ ls -al /home/pi/tracks/gpx/
     LOGGER.info(msg_);
   }
 
+  private static void error(final String error_)
+  {
+    LOGGER.error(error_);
+    System.exit(1);
+  }
+
   private static GPXWriter getInstance(final OptionSet options) throws IOException
   {
     final long from = (Long) options.valueOf("f");
@@ -172,8 +185,7 @@ ls -al /home/pi/tracks/gpx/
     final boolean backup = options.has("b");
     final int date = (Integer) options.valueOf("d");
 
-    final GPXWriter gpx = new GPXWriter(from, to, date, backup);
-    return gpx;
+    return new GPXWriter(from, to, date, backup);
   }
 
   @Override
@@ -218,7 +230,7 @@ ls -al /home/pi/tracks/gpx/
     if (_nmeaFile.getFile().exists() && _nmeaFile.getFile().canWrite())
     {
       final String oldNmea = _nmeaFile.getFile().getAbsolutePath();
-      final StringBuffer newNmea = new StringBuffer(oldNmea);
+      final StringBuilder newNmea = new StringBuilder(oldNmea);
 
       final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd_HH-mm-ss");
       final String date = sdf.format(new Date());
@@ -242,7 +254,7 @@ ls -al /home/pi/tracks/gpx/
   private String buildNmeaOptions()
   {
     //-i nmea[,ignore_fix=1[,date=20160612]]
-    final StringBuffer nmea = new StringBuffer("-i nmea");
+    final StringBuilder nmea = new StringBuilder("-i nmea");
     if (_date != 0)
     {
       nmea.append(",date=").append(_date);
@@ -253,7 +265,7 @@ ls -al /home/pi/tracks/gpx/
   private String buildOutFile()
   {
     // -F /home/pi/tracks/gpx/2016-20500101.gpx
-    final StringBuffer name = new StringBuffer(_gpxDir).append("/");
+    final StringBuilder name = new StringBuilder(_gpxDir).append("/");
     final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd_HH-mm-ss");
     final String date = sdf.format(new Date());
     name.append(date).append(".gpx");
@@ -263,7 +275,7 @@ ls -al /home/pi/tracks/gpx/
   private String buildTrackOptions()
   {
     //[-x track,start=2016,stop=20500101,fix=3d]
-    final StringBuffer track = new StringBuffer("");
+    final StringBuilder track = new StringBuilder("");
     if (_from > 0 || _to > 0)
     {
       track.append("-x track");

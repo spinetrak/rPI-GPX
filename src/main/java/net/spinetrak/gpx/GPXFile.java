@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 spinetrak
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package net.spinetrak.gpx;
 
 import com.javadocmd.simplelatlng.LatLng;
@@ -26,7 +50,7 @@ public class GPXFile extends GPSFile
   private long _to;
   private int _zoom;
 
-  public GPXFile(final File file_)
+  private GPXFile(final File file_)
   {
     super(file_);
     init();
@@ -41,20 +65,16 @@ public class GPXFile extends GPSFile
       {
         gpxFiles.add(new GPXFile(path.toFile()));
       }
-      Collections.sort(gpxFiles, new Comparator<GPXFile>()
-      {
-        public int compare(final GPXFile o1, final GPXFile o2)
+      Collections.sort(gpxFiles, (o1, o2) -> {
+        try
         {
-          try
-          {
-            return Files.getLastModifiedTime(o2.getFile().toPath()).compareTo(
-              Files.getLastModifiedTime(o1.getFile().toPath()));
-          }
-          catch (final IOException ex_)
-          {
-            LOGGER.error("", ex_);
-            return 0;
-          }
+          return Files.getLastModifiedTime(o2.getFile().toPath()).compareTo(
+            Files.getLastModifiedTime(o1.getFile().toPath()));
+        }
+        catch (final IOException ex_)
+        {
+          LOGGER.error("", ex_);
+          return 0;
         }
       });
     }
